@@ -56,6 +56,7 @@ public class AutoRedGoalStart extends LinearOpMode {
     // Initialize poses
     private final Pose startPose = new Pose(96, 136, Math.toRadians(90)); // Start Pose of our robot.
     private final Pose scorePose = new Pose(80, 90, Math.toRadians(45)); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
+    private final Pose finalPose = new Pose(90, 56, Math.toRadians(90)); // Final Pose of our robot.
     private final Pose PPGPose = new Pose(100, 83.5, Math.toRadians(180)); // Highest (First Set) of Artifacts from the Spike Mark.
     private final Pose PPG2Pose = new Pose(104, 83.5, Math.toRadians(180)); // Highest (First Set) of Artifacts from the Spike Mark position 2.
     private final Pose PPG3Pose = new Pose(109, 83.5, Math.toRadians(180)); // Highest (First Set) of Artifacts from the Spike Mark position 3.
@@ -88,6 +89,7 @@ public class AutoRedGoalStart extends LinearOpMode {
     private PathChain grab3GPP;
     private PathChain grab4GPP;
     private PathChain scoreGPP;
+    private PathChain finalPosition;
 
 
     //set April Tag values to specific patterns
@@ -306,6 +308,12 @@ public class AutoRedGoalStart extends LinearOpMode {
                 .addPath(new BezierLine(PPG4Pose, scorePose))
                 .setLinearHeadingInterpolation(PPG4Pose.getHeading(), scorePose.getHeading())
                 .build();
+
+        // Move to the final pose from the scoring pose
+        finalPosition = follower.pathBuilder()
+                .addPath(new BezierLine(scorePose, finalPose))
+                .setLinearHeadingInterpolation(scorePose.getHeading(), finalPose.getHeading())
+                .build();
     }
 
     public void buildPathsPGP() {
@@ -341,6 +349,12 @@ public class AutoRedGoalStart extends LinearOpMode {
                 .addPath(new BezierLine(PGP4Pose, scorePose))
                 .setLinearHeadingInterpolation(PGP4Pose.getHeading(), scorePose.getHeading())
                 .build();
+
+        // Move to the final pose from the scoring pose
+        finalPosition = follower.pathBuilder()
+                .addPath(new BezierLine(scorePose, finalPose))
+                .setLinearHeadingInterpolation(scorePose.getHeading(), finalPose.getHeading())
+                .build();
     }
 
     public void buildPathsGPP() {
@@ -375,6 +389,12 @@ public class AutoRedGoalStart extends LinearOpMode {
         scoreGPP = follower.pathBuilder()
                 .addPath(new BezierLine(GPP4Pose, scorePose))
                 .setLinearHeadingInterpolation(GPP4Pose.getHeading(), scorePose.getHeading())
+                .build();
+
+        // Move to the final pose from the scoring pose
+        finalPosition = follower.pathBuilder()
+                .addPath(new BezierLine(scorePose, finalPose))
+                .setLinearHeadingInterpolation(scorePose.getHeading(), finalPose.getHeading())
                 .build();
     }
 
@@ -446,9 +466,11 @@ public class AutoRedGoalStart extends LinearOpMode {
 
                     // Shoot the artifacts
                     shootArtifacts();
+                    // Go to the final position
+                    follower.followPath(finalPosition);
                     setpathStatePPG(-1); //set it to -1 so it stops the state machine execution
                 }
-                break;    
+                break;
         }
     }
 
@@ -519,6 +541,8 @@ public class AutoRedGoalStart extends LinearOpMode {
 
                     // Shoot the artifacts
                     shootArtifacts();
+                    // Go to the final position
+                    follower.followPath(finalPosition);
                     setpathStatePGP(-1); //set it to -1 so it stops the state machine execution
                 }
                 break;
@@ -592,6 +616,8 @@ public class AutoRedGoalStart extends LinearOpMode {
 
                     // Shoot the artifacts
                     shootArtifacts();
+                    // Go to the final position
+                    follower.followPath(finalPosition);
                     setpathStateGPP(-1); //set it to -1 so it stops the state machine execution
                 }
                 break;
