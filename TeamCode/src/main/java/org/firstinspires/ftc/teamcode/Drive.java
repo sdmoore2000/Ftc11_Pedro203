@@ -80,13 +80,17 @@ public class Drive extends LinearOpMode{
                 }
             }
 
-            if(gamepad1.a){
+            if(gamepad1.left_trigger > 0.5){
                 rightShooter.setPower(shooterPower);
                 leftShooter.setPower(shooterPower);
-                secondStage.setPower(1);
             } else {
                 rightShooter.setPower(0);
                 leftShooter.setPower(0);
+            }
+
+            if(gamepad1.right_trigger > 0.5){
+                secondStage.setPower(1);
+            } else {
                 secondStage.setPower(0);
             }
 

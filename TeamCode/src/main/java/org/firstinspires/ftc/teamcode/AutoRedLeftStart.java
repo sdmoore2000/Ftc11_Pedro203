@@ -28,7 +28,12 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
+import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
@@ -38,10 +43,14 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
-@Autonomous(name = "Auto Red Goal Start", group = "Opmode")
+@Autonomous(name = "Auto Red Left Start", group = "Opmode")
 @Configurable // Panels
 @SuppressWarnings("FieldCanBeLocal") // Stop Android Studio from bugging about variables being predefined
-public class AutoRedGoalStart extends LinearOpMode {
+public class AutoRedLeftStart extends LinearOpMode {
+    // Add color sensor
+    private NormalizedColorSensor leftColor;
+    double hue;
+
     // Add items for shooting and intake
     public DcMotor leftShooter;
     public DcMotor rightShooter;
@@ -54,7 +63,7 @@ public class AutoRedGoalStart extends LinearOpMode {
     private final ElapsedTime runtime = new ElapsedTime();
 
     // Initialize poses
-    private final Pose startPose = new Pose(96, 136, Math.toRadians(90)); // Start Pose of our robot.
+    private final Pose startPose = new Pose(80, 8, Math.toRadians(90)); // Start Pose of our robot.
     private final Pose scorePose = new Pose(80, 90, Math.toRadians(45)); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
     private final Pose finalPose = new Pose(90, 56, Math.toRadians(90)); // Final Pose of our robot.
     private final Pose PPGPose = new Pose(100, 83.5, Math.toRadians(180)); // Highest (First Set) of Artifacts from the Spike Mark.
@@ -150,18 +159,36 @@ public class AutoRedGoalStart extends LinearOpMode {
         intake.setPower(0);
     }
 
-    public void shootArtifacts() {
+    public void shootArtifactsLeft() {
         // Put your shooting logic/functions here
         leftShooter.setPower(0.7);
         rightShooter.setPower(0.7);
         sleep(1000);
         secondStage.setPower(1);
-        sleep(500);
+        sleep(2000);
+        leftFirstStage.setPower(1);
+        sleep(2000);
+        leftFirstStage.setPower(0);
         rightFirstStage.setPower(1);
+        sleep(2000);
+        rightFirstStage.setPower(0);
+        secondStage.setPower(0);
+        leftShooter.setPower(0);
+        rightShooter.setPower(0);
+    }
+
+    public void shootArtifactsRight() {
+        // Put your shooting logic/functions here
+        leftShooter.setPower(0.7);
+        rightShooter.setPower(0.7);
         sleep(1000);
+        secondStage.setPower(1);
+        sleep(2000);
+        rightFirstStage.setPower(1);
+        sleep(2000);
         rightFirstStage.setPower(0);
         leftFirstStage.setPower(1);
-        sleep(1000);
+        sleep(2000);
         leftFirstStage.setPower(0);
         secondStage.setPower(0);
         leftShooter.setPower(0);
@@ -179,6 +206,8 @@ public class AutoRedGoalStart extends LinearOpMode {
 
         leftFirstStage = hardwareMap.get(CRServo.class, "left_first_stage");
         rightFirstStage = hardwareMap.get(CRServo.class, "right_first_stage");
+
+        leftColor = hardwareMap.get(NormalizedColorSensor.class, "color_sensor");
 
         secondStage.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFirstStage.setDirection(CRServo.Direction.REVERSE);
@@ -219,6 +248,35 @@ public class AutoRedGoalStart extends LinearOpMode {
             targetFound = false;
             desiredTag = null;
 
+            // Color sensing
+            telemetry.addData("Light Detected", ((OpticalDistanceSensor) leftColor).getLightDetected());
+            NormalizedRGBA colors = leftColor.getNormalizedColors();
+            hue = JavaUtil.colorToHue(colors.toColor());
+            telemetry.addData("Hue", JavaUtil.colorToHue(colors.toColor()));
+
+            //Using hue to detect color
+            if(hue < 30){
+                telemetry.addData("Color", "Red");
+            }
+            else if (hue < 60) {
+                telemetry.addData("Color", "Orange");
+            }
+            else if (hue < 90){
+                telemetry.addData("Color", "Yellow");
+            }
+            else if (hue < 150){
+                telemetry.addData("Color", "Green");
+            }
+            else if (hue < 225){
+                telemetry.addData("Color", "Blue");
+            }
+            else if (hue < 350){
+                telemetry.addData("Color", "Purple");
+            }
+            else {
+                telemetry.addData("Color", "Red");
+            }
+
             // Step through the list of detected tags and look for a matching tag
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
             for (AprilTagDetection detection : currentDetections) {
@@ -251,6 +309,12 @@ public class AutoRedGoalStart extends LinearOpMode {
                 } else {
                     // This tag is NOT in the library, so we don't have enough information to track to it.
                     telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
+                    // Default to call lines for the PGP pattern
+                    buildPathsPPG();
+                    targetFound = true;
+                    desiredTag = detection;
+                    foundID = 21; // This should likely be PPG_TAG_ID or the corresponding state machine ID
+                    break;  // don't look any further.
                 }
             }
 
@@ -412,7 +476,7 @@ public class AutoRedGoalStart extends LinearOpMode {
                 if (!follower.isBusy()) {
 
                     // Shoot the artifacts since we are in shooting pose
-                    shootArtifacts();
+                    shootArtifactsLeft();
                     // Move to the first artifact pickup location from the scoring position
                     follower.followPath(grabPPG);
                     setpathStatePPG(2); // Call the setter method
@@ -465,7 +529,11 @@ public class AutoRedGoalStart extends LinearOpMode {
                 if (!follower.isBusy()) {
 
                     // Shoot the artifacts
-                    shootArtifacts();
+                    if(hue>350) {
+                        shootArtifactsLeft();
+                    } else {
+                        shootArtifactsRight();
+                    }
                     // Go to the final position
                     follower.followPath(finalPosition);
                     setpathStatePPG(-1); //set it to -1 so it stops the state machine execution
@@ -487,7 +555,7 @@ public class AutoRedGoalStart extends LinearOpMode {
                 if (!follower.isBusy()) {
 
                     // Shoot the artifacts since we are in shooting pose
-                    shootArtifacts();
+                    shootArtifactsLeft();
                     // Move to the first artifact pickup location from the scoring position
                     follower.followPath(grabPGP);
                     setpathStatePGP(2); // Call the setter method
@@ -540,7 +608,11 @@ public class AutoRedGoalStart extends LinearOpMode {
                 if (!follower.isBusy()) {
 
                     // Shoot the artifacts
-                    shootArtifacts();
+                    if(hue > 350) {
+                        shootArtifactsRight();
+                    } else {
+                        shootArtifactsLeft();
+                    }
                     // Go to the final position
                     follower.followPath(finalPosition);
                     setpathStatePGP(-1); //set it to -1 so it stops the state machine execution
@@ -562,7 +634,7 @@ public class AutoRedGoalStart extends LinearOpMode {
                 if (!follower.isBusy()) {
 
                     // Shoot the artifacts since we are in shooting pose
-                    shootArtifacts();
+                    shootArtifactsLeft();
                     // Move to the first artifact pickup location from the scoring position
                     follower.followPath(grabGPP);
                     setpathStateGPP(2); // Call the setter method
@@ -615,7 +687,7 @@ public class AutoRedGoalStart extends LinearOpMode {
                 if (!follower.isBusy()) {
 
                     // Shoot the artifacts
-                    shootArtifacts();
+                    shootArtifactsLeft();
                     // Go to the final position
                     follower.followPath(finalPosition);
                     setpathStateGPP(-1); //set it to -1 so it stops the state machine execution
