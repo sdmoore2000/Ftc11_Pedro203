@@ -43,10 +43,10 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
-@Autonomous(name = "Auto Red Left Start", group = "Opmode")
+@Autonomous(name = "Auto Blue Right Start", group = "Opmode")
 @Configurable // Panels
 @SuppressWarnings("FieldCanBeLocal") // Stop Android Studio from bugging about variables being predefined
-public class AutoRedLeftStart extends LinearOpMode {
+public class AutoBlueRightStart extends LinearOpMode {
     // Add color sensor
     private NormalizedColorSensor leftColor;
     double hue;
@@ -63,21 +63,21 @@ public class AutoRedLeftStart extends LinearOpMode {
     private final ElapsedTime runtime = new ElapsedTime();
 
     // Initialize poses
-    private final Pose startPose = new Pose(76, 8, Math.toRadians(90)); // Start Pose of our robot.
-    private final Pose scorePose = new Pose(85, 90, Math.toRadians(45)); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
-    private final Pose finalPose = new Pose(90, 56, Math.toRadians(90)); // Final Pose of our robot.
-    private final Pose PPGPose = new Pose(100, 83.5, Math.toRadians(180)); // Highest (First Set) of Artifacts from the Spike Mark.
-    private final Pose PPG2Pose = new Pose(104, 83.5, Math.toRadians(180)); // Highest (First Set) of Artifacts from the Spike Mark position 2.
-    private final Pose PPG3Pose = new Pose(109, 83.5, Math.toRadians(180)); // Highest (First Set) of Artifacts from the Spike Mark position 3.
-    private final Pose PPG4Pose = new Pose(115, 83.5, Math.toRadians(180)); // Highest (First Set) of Artifacts from the Spike Mark position 4.
-    private final Pose PGPPose = new Pose(100, 59.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose PGP2Pose = new Pose(104, 59.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark position 2.
-    private final Pose PGP3Pose = new Pose(109, 59.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark position 3.
-    private final Pose PGP4Pose = new Pose(115, 59.5, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark position 4.
-    private final Pose GPPPose = new Pose(100, 35.5, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
-    private final Pose GPP2Pose = new Pose(104, 35.5, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark position 2.
-    private final Pose GPP3Pose = new Pose(109, 35.5, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark position 3.
-    private final Pose GPP4Pose = new Pose(115, 35.5, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark position 4.
+    private final Pose startPose = new Pose(60, 8, Math.toRadians(90)); // Start Pose of our robot.
+    private final Pose scorePose = new Pose(59, 90, Math.toRadians(135)); // Scoring Pose of our robot. It is facing the goal at a 115 degree angle.
+    private final Pose finalPose = new Pose(54, 56, Math.toRadians(90)); // Final Pose of our robot.
+    private final Pose PPGPose = new Pose(44, 83.5, Math.toRadians(0)); // Highest (First Set) of Artifacts from the Spike Mark.
+    private final Pose PPG2Pose = new Pose(40, 83.5, Math.toRadians(0)); // Highest (First Set) of Artifacts from the Spike Mark position 2.
+    private final Pose PPG3Pose = new Pose(35, 83.5, Math.toRadians(0)); // Highest (First Set) of Artifacts from the Spike Mark position 3.
+    private final Pose PPG4Pose = new Pose(29, 83.5, Math.toRadians(0)); // Highest (First Set) of Artifacts from the Spike Mark position 4.
+    private final Pose PGPPose = new Pose(44, 59.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose PGP2Pose = new Pose(40, 59.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark position 2.
+    private final Pose PGP3Pose = new Pose(35, 59.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark position 3.
+    private final Pose PGP4Pose = new Pose(29, 59.5, Math.toRadians(0)); // Middle (Second Set) of Artifacts from the Spike Mark position 4.
+    private final Pose GPPPose = new Pose(44, 35.5, Math.toRadians(0)); // Lowest (Third Set) of Artifacts from the Spike Mark.
+    private final Pose GPP2Pose = new Pose(40, 35.5, Math.toRadians(0)); // Lowest (Third Set) of Artifacts from the Spike Mark position 2.
+    private final Pose GPP3Pose = new Pose(35, 35.5, Math.toRadians(0)); // Lowest (Third Set) of Artifacts from the Spike Mark position 3.
+    private final Pose GPP4Pose = new Pose(29, 35.5, Math.toRadians(0)); // Lowest (Third Set) of Artifacts from the Spike Mark position 4.
     // Initialize variables for paths
 
     private PathChain initialScorePPG;
@@ -167,10 +167,10 @@ public class AutoRedLeftStart extends LinearOpMode {
         secondStage.setPower(1);
         sleep(1000);
         leftFirstStage.setPower(1);
-        sleep(3000);
+        sleep(3500);
         leftFirstStage.setPower(0);
         rightFirstStage.setPower(1);
-        sleep(3000);
+        sleep(3500);
         rightFirstStage.setPower(0);
         secondStage.setPower(0);
         leftShooter.setPower(0);
@@ -185,10 +185,10 @@ public class AutoRedLeftStart extends LinearOpMode {
         secondStage.setPower(1);
         sleep(1000);
         rightFirstStage.setPower(1);
-        sleep(3000);
+        sleep(3500);
         rightFirstStage.setPower(0);
         leftFirstStage.setPower(1);
-        sleep(3000);
+        sleep(3500);
         leftFirstStage.setPower(0);
         secondStage.setPower(0);
         leftShooter.setPower(0);
